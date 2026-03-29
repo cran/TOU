@@ -9,10 +9,10 @@
 # #' @return the corresponding mean TOU value for x.
 # #' @examples
 # #' # evaluating a specific value of time
-# #' mean.tou(x=1.5, parameters=c(14.75, 19.2, 66.27))
+# #' tou.mean(x=1.5, parameters=c(14.75, 19.2, 66.27))
 # #' # evaluating some values of time
-# #' mean.tou(x=c(0.5,1.0,1.5,5.0,9.2), parameters=c(14.75, 19.2, 66.27))
-mean.tou <- function(x, parameters) {
+# #' tou.mean(x=c(0.5,1.0,1.5,5.0,9.2), parameters=c(14.75, 19.2, 66.27))
+tou.mean <- function(x, parameters) {
   qe <- parameters[1]
   lambda <- parameters[2]
   a <- parameters[3]
@@ -50,9 +50,9 @@ mean.tou <- function(x, parameters) {
 # #' observed.values <- c(0, 1.271, 1.693, 1.845, 1.919, 1.940, 1.999, 2.008,
 # #'                      2.101, 2.064, 2.046, 2.105, 2.013, 2.040, 2.017)
 # #' observed.process <- cbind(observed.time, observed.values)
-# #' loglikelihood.tou(x=c(2.1, 0.4, 0.51, 0.15), y=observed.process)
+# #' tou.loglikelihood(x=c(2.1, 0.4, 0.51, 0.15), y=observed.process)
 
-loglikelihood.tou <- function(x, y) {
+tou.loglikelihood <- function(x, y) {
   n <- nrow(y)
   qe <- x[1]
   lambda <- x[2]
@@ -150,32 +150,32 @@ lambda.root <- function(y) {
 # #'                      2.101, 2.064, 2.046, 2.105, 2.013, 2.040, 2.017)
 # #' observed.process <- cbind(observed.time, observed.values)
 # #' # none parameters are fixed
-# #' ll.tou <- make.loglikelihood.tou(y=observed.process)
+# #' ll.tou <- tou.make.loglikelihood(y=observed.process)
 # #' ll.tou(x=c(2.1, 0.4, 0.51, 0.15))
 # #' # the parameter qe is fixed
-# #' ll.tou <- make.loglikelihood.tou(y=observed.process, qe=2.1)
+# #' ll.tou <- tou.make.loglikelihood(y=observed.process, qe=2.1)
 # #' ll.tou(x=c(0.4, 0.51, 0.15))
 # #' # the parameter kn is fixed
-# #' ll.tou <- make.loglikelihood.tou(y=observed.process, kn=0.0355144)
+# #' ll.tou <- tou.make.loglikelihood(y=observed.process, kn=0.0355144)
 # #' ll.tou(x=c(2.1, 0.51, 0.15))
 # #' # the parameter n is fixed
-# #' ll.tou <- make.loglikelihood.tou(y=observed.process, n=3.822317)
+# #' ll.tou <- tou.make.loglikelihood(y=observed.process, n=3.822317)
 # #' ll.tou(x=c(2.1, 0.4, 0.15))
 # #' # the parameters qe and kn are fixed
-# #' ll.tou <- make.loglikelihood.tou(y=observed.process, qe=2.1, kn=0.0355144)
+# #' ll.tou <- tou.make.loglikelihood(y=observed.process, qe=2.1, kn=0.0355144)
 # #' ll.tou(c(0.51, 0.15))
 # #' # the parameters qe and n are fixed
-# #' ll.tou <- make.loglikelihood.tou(y=observed.process, qe=2.1, n=3.822317)
+# #' ll.tou <- tou.make.loglikelihood(y=observed.process, qe=2.1, n=3.822317)
 # #' ll.tou(c(0.4, 0.15))
 # #' # the parameters kn and n are fixed
-# #' ll.tou <- make.loglikelihood.tou(y=observed.process, kn=0.0355144, n=3.822317)
+# #' ll.tou <- tou.make.loglikelihood(y=observed.process, kn=0.0355144, n=3.822317)
 # #' ll.tou(c(2.1, 0.15))
 # #' # the parameters qe, kn and n are fixed
-# #' ll.tou <- make.loglikelihood.tou(y=observed.process, qe=2.1, kn=0.0355144,
+# #' ll.tou <- tou.make.loglikelihood(y=observed.process, qe=2.1, kn=0.0355144,
 # #'                           n=3.822317)
 # #' ll.tou(c(0.15))
 # #'
-make.loglikelihood.tou <- function(y, qe=NULL, kn=NULL, n=NULL) {
+tou.make.loglikelihood <- function(y, qe=NULL, kn=NULL, n=NULL) {
   m <- ncol(y)
   null.size <- sum(c(is.null(qe), is.null(kn), is.null(n)))
 
@@ -225,10 +225,14 @@ make.loglikelihood.tou <- function(y, qe=NULL, kn=NULL, n=NULL) {
       }
       value <- 0
       for(i in 2:m) {
-        value <- value + loglikelihood.tou(x=parameters, y=y[,c(1,i)])
+        value <- value + tou.loglikelihood(x=parameters, y=y[,c(1,i)])
       }
     }
-    return(value)
+    if(is.finite(value)) {
+      return(value)
+    } else {
+      return(-1e300)
+    }
   }
 }
 
@@ -290,28 +294,28 @@ make.loglikelihood.tou <- function(y, qe=NULL, kn=NULL, n=NULL) {
 #'                      3.083, 3.043, 3.017, 2.954, 2.996, 2.886, 2.844)
 #' observed.process <- cbind(observed.time, observed.values)
 #' # fitting the model without any fixed parameters
-#' result <- fit.model.tou(w=observed.process)
+#' result <- tou.fit.params(w=observed.process)
 #' print(result)
 #' # fitting the model with a fixed value for the parameter qe
-#' result <- fit.model.tou(w=observed.process, qe=2.9)
+#' result <- tou.fit.params(w=observed.process, qe=2.9)
 #' print(result)
 # #' # fitting the model with a fixed value for the parameter kn
-# #' result <- fit.model.tou(w=observed.process, kn=0.07)
+# #' result <- tou.fit.params(w=observed.process, kn=0.07)
 # #' print(result)
 # #' # fitting the model with a fixed value for the parameter n
-# #' result <- fit.model.tou(w=observed.process, n=1.2)
+# #' result <- tou.fit.params(w=observed.process, n=1.2)
 # #' print(result)
 # #' # fitting the model with fixed values for the parameters qe and kn
-# #' result <- fit.model.tou(w=observed.process, qe=2.9, kn=0.07)
+# #' result <- tou.fit.params(w=observed.process, qe=2.9, kn=0.07)
 # #' print(result)
 #' # fitting the model with fixed values for the parameters qe and n
-#' result <- fit.model.tou(w=observed.process, qe=2.9, n=1.2)
+#' result <- tou.fit.params(w=observed.process, qe=2.9, n=1.2)
 #' print(result)
 # #' # fitting the model with fixed values for the parameters kn and n
-# #' result <- fit.model.tou(w=observed.process, kn=0.07, n=1.2)
+# #' result <- tou.fit.params(w=observed.process, kn=0.07, n=1.2)
 # #' print(result)
 # #' # fitting the model with fixed values for the parameters qe, kn and n
-# #' result <- fit.model.tou(w=observed.process, qe=2.9, kn=0.07, n=1.2)
+# #' result <- tou.fit.params(w=observed.process, qe=2.9, kn=0.07, n=1.2)
 # #' print(result)
 #'
 #' # an example with three trajectories of experimental adsorption
@@ -326,34 +330,34 @@ make.loglikelihood.tou <- function(y, qe=NULL, kn=NULL, n=NULL) {
 #' observed.processes <- cbind(observed.time, observed.values.1,
 #'                             observed.values.2, observed.values.3)
 # #' # fitting the model without any fixed parameters
-# #' result <- fit.model.tou(w=observed.processes)
+# #' result <- tou.fit.params(w=observed.processes)
 # #' print(result)
 # #' # fitting the model with a fixed value for the parameter qe
-# #' result <- fit.model.tou(w=observed.processes, qe=2.95)
+# #' result <- tou.fit.params(w=observed.processes, qe=2.95)
 # #' print(result)
 # #' # fitting the model with a fixed value for the parameter kn
-# #' result <- fit.model.tou(w=observed.processes, kn=0.07)
+# #' result <- tou.fit.params(w=observed.processes, kn=0.07)
 # #' print(result)
 #' # fitting the model with a fixed value for the parameter n
-#' result <- fit.model.tou(w=observed.processes, n=1.21)
+#' result <- tou.fit.params(w=observed.processes, n=1.21)
 #' print(result)
 # #' # fitting the model with fixed values for the parameters qe and kn
-# #' result <- fit.model.tou(w=observed.processes, qe=2.95, kn=0.07)
+# #' result <- tou.fit.params(w=observed.processes, qe=2.95, kn=0.07)
 # #' print(result)
 # #' # fitting the model with fixed values for the parameters qe and n
-# #' result <- fit.model.tou(w=observed.processes, qe=2.95, n=1.21)
+# #' result <- tou.fit.params(w=observed.processes, qe=2.95, n=1.21)
 # #' print(result)
 # #' # fitting the model with fixed values for the parameters kn and n
-# #' result <- fit.model.tou(w=observed.processes, kn=0.07, n=1.21)
+# #' result <- tou.fit.params(w=observed.processes, kn=0.07, n=1.21)
 # #' print(result)
 #' # fitting the model with fixed values for the parameters qe, kn and n
-#' result <- fit.model.tou(w=observed.processes, qe=2.95, kn=0.07, n=1.21)
+#' result <- tou.fit.params(w=observed.processes, qe=2.95, kn=0.07, n=1.21)
 #' print(result)
 #'
 #' @export
-fit.model.tou <- function(w, qe=NULL, kn=NULL, n=NULL) {
+tou.fit.params <- function(w, qe=NULL, kn=NULL, n=NULL) {
 
-  ll.process <- make.loglikelihood.tou(y=w, qe=qe, kn=kn, n=n)
+  ll.process <- tou.make.loglikelihood(y=w, qe=qe, kn=kn, n=n)
   ll.process.neg <- function(x) { value <- -1*ll.process(x) }
 
   fixed <- c(!is.null(qe), !is.null(kn), !is.null(n), FALSE)
@@ -493,7 +497,7 @@ fit.model.tou <- function(w, qe=NULL, kn=NULL, n=NULL) {
   m <- ncol(w)
   y <- w[,2:m]
   y.media <- mean(as.matrix(y))
-  y.hat <- mean.tou(x=w[,1], parameters = c(qe, lambda, a, tau))
+  y.hat <- tou.mean(x=w[,1], parameters = c(qe, lambda, a, tau))
   SST <- sum((y - y.media)^2)
   SSR <- sum((y - y.hat)^2)
   R2 <- 1 - SSR / SST

@@ -1,8 +1,8 @@
-a65a5e44d7ad141358e848aae8c31443 *DESCRIPTION
-0ae7239565cccbfa51c94c31c7618a47 *NAMESPACE
-0886b029b35564672cfbfb91fd64d7d6 *R/draw_model_tou.R
-7c0a377dc4fac917b2fcade5faf57742 *R/fit_model_tou.R
-4596c67ce48ac1a4b84d4cf817bb9658 *build/partial.rdb
+3f312a71ab3be9f209f314b98824cbdb *DESCRIPTION
+392d2240d37b6a1f464943c7912278b7 *NAMESPACE
+025d5f5c6b032668b6944ef83ec5a5ce *R/tou_fit_params.R
+7c55bc73918d166e62d23673cd18e308 *R/tou_plot.R
+8954b51ec3af9b9ec2b2010adfbe2098 *build/partial.rdb
 ec714844b78d5297c286c420eccc914e *inst/REFERENCES.bib
-13b97558b0a34c3768b8cd628886f7d0 *man/draw.model.tou.Rd
-4ba8d3de413f5901d74f39a5839f5ebd *man/fit.model.tou.Rd
+2f02a8bfd2f05bc5fbf939a7c315752d *man/tou.fit.params.Rd
+7a84badb848168504dfea9128ba90ae2 *man/tou.plot.Rd

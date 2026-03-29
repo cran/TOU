@@ -19,12 +19,13 @@ utils::globalVariables(c("Time", "Adsorption", "Replicate"))
 #'                      3.083, 3.043, 3.017, 2.954, 2.996, 2.886, 2.844)
 #' observed.process <- cbind(observed.time, observed.values)
 #' # fitting the model without any fixed parameters
-#' result <- fit.model.tou(w=observed.process)
+#' result <- tou.fit.params(w=observed.process)
 #' # default units time in minutes and default units adsorption in mg/g
-#' draw.model.tou(result)
+#' tou.plot(result)
 #' # changing units time to seconds and units adsorption to mg/mmol
-#' draw.model.tou(result, time.unit="seconds", adsorption.unit="mg/mmol")
+#' tou.plot(result, time.unit="seconds", adsorption.unit="mg/mmol")
 #'
+#' # an example with three trajectories of experimental adsorption
 #' observed.time <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200,
 #'                    250, 300)
 #' observed.values.1 <- c(0, 1.684, 2.341, 2.581, 2.842, 2.890, 2.959, 3.042,
@@ -36,11 +37,11 @@ utils::globalVariables(c("Time", "Adsorption", "Replicate"))
 #' observed.processes <- cbind(observed.time, observed.values.1,
 #'                             observed.values.2, observed.values.3)
 #' # fitting the model without any fixed parameters
-#' result <- fit.model.tou(w=observed.processes)
-#' draw.model.tou(result)
+#' result <- tou.fit.params(w=observed.processes)
+#' tou.plot(result)
 #'
 #' @export
-draw.model.tou <- function(x, time.unit=NULL, adsorption.unit=NULL) {
+tou.plot <- function(x, time.unit=NULL, adsorption.unit=NULL) {
   n.plot <- nrow(x$observed.data)
   m.plot <- ncol(x$observed.data)
   df.ggplot <- data.frame(Time=rep(0, n.plot*(m.plot-1)), Adsorption=0,
@@ -66,7 +67,7 @@ draw.model.tou <- function(x, time.unit=NULL, adsorption.unit=NULL) {
        ggplot2::theme(legend.position = c(0.8, (35/300)+(1/30)*m.plot)) +
        ggplot2::labs(subtitle="Fitted model in continuous line, experimental data in points",
                      color="Experiment") +
-       ggplot2::stat_function(fun=mean.tou,
+       ggplot2::stat_function(fun=tou.mean,
                               args=list(parameters=as.numeric(c(x$qe,x$lambda,x$a))),
                               colour="black")
   if(is.null(time.unit)) {
